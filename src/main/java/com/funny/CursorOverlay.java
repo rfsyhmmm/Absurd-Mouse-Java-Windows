@@ -1,77 +1,86 @@
 package com.funny;
 
-import com.sun.jna.Native;
-
-import com.sun.jna.platform.win32.User32;
-
-import com.sun.jna.platform.win32.WinDef;
-
-import com.sun.jna.platform.win32.WinUser;
-
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Path2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CursorOverlay extends JWindow {
-    private int cursorSize = 100;
+    private static final Logger LOGGER = Logger.getLogger(CursorOverlay.class.getName());
+    private int cursorSize = 200;
+    private int offX = 0, offY = 0; // Kalibrasi manual
+    private BufferedImage customIcon;
 
     public CursorOverlay() {
-        // Penting: Mengatur background transparan total
         setBackground(new Color(0, 0, 0, 0));
         setAlwaysOnTop(true);
-        setFocusableWindowState(false);
-        setType(Type.UTILITY);
-        // Ukuran canvas besar agar kursor raksasa tidak terpotong saat di pinggir layar
-        setSize(2000, 2000);
-    }
-    public void makeClickThrough() {
-        WinDef.HWND hwnd = new WinDef.HWND(Native.getWindowPointer(this));
-        int wl = User32.INSTANCE.GetWindowLong(hwnd, WinUser.GWL_EXSTYLE);
-        User32.INSTANCE.SetWindowLong(hwnd, WinUser.GWL_EXSTYLE,
-                wl | WinUser.WS_EX_LAYERED | WinUser.WS_EX_TRANSPARENT);
+        setSize(5000, 5000);
     }
 
-    public void setCursorSize(int size) {
-        this.cursorSize = size;
+    public void setIcon(File file) {
+        try {
+            BufferedImage raw = ImageIO.read(file);
+            this.customIcon = trimImage(raw);
+            repaint();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Gagal memuat gambar", e);
+        }
+    }
+
+    private BufferedImage trimImage(BufferedImage img) {
+        int width = img.getWidth(), height = img.getHeight();
+        int top = height, left = width, bottom = 0, right = 0;
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int alpha = (img.getRGB(x, y) >> 24) & 0xff;
+                // THRESHOLD: Abaikan pixel yang sangat transparan (noise background)
+                if (alpha > 15) {
+                    if (x < left) left = x;
+                    if (y < top) top = y;
+                    if (x > right) right = x;
+                    if (y > bottom) bottom = y;
+                }
+            }
+        }
+        if (right < left || bottom < top) return img;
+        return img.getSubimage(left, top, (right - left) + 1, (bottom - top) + 1);
+    }
+
+    public void updateSize(int size) { this.cursorSize = size; repaint(); }
+
+    // Update offset manual dari UI
+    public void setManualOffsets(int x, int y) {
+        this.offX = x;
+        this.offY = y;
         repaint();
-    }
-
-    public void updatePosition(int x, int y) {
-        // Hotspot Alignment:
-        // Titik (0,0) pada window ini akan diletakkan tepat di ujung kursor asli
-        setLocation(x, y);
     }
 
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
-
-        // Menghaluskan garis kursor
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        // Skala pengali (Base size kursor standar adalah 18 unit)
-        double s = cursorSize / 18.0;
+        if (customIcon != null) {
+            // Gambar digeser berdasarkan offset manual (dikali skala agar konsisten)
+            g2d.drawImage(customIcon, offX, offY, cursorSize, cursorSize, null);
+        } else {
+            drawDefaultWhiteCursor(g2d, cursorSize);
+        }
+    }
 
-        // Path kursor yang lebih akurat dengan ujung tepat di 0,0
-        Path2D cursorPath = new Path2D.Double();
-        cursorPath.moveTo(0, 0);                         // Ujung (Hotspot)
-        cursorPath.lineTo(0, 15 * s);                    // Sisi kiri
-        cursorPath.lineTo(4.5 * s, 11 * s);              // Lekukan bawah kiri
-        cursorPath.lineTo(7.5 * s, 18 * s);              // Ekor kiri
-        cursorPath.lineTo(9.5 * s, 17 * s);              // Ekor kanan
-        cursorPath.lineTo(6.5 * s, 10.5 * s);            // Lekukan bawah kanan
-        cursorPath.lineTo(11 * s, 10.5 * s);             // Sisi kanan
-        cursorPath.closePath();
-
-        // Gambar isi kursor (Putih)
-        g2d.setColor(Color.WHITE);
-        g2d.fill(cursorPath);
-
-        // Gambar garis tepi (Hitam)
-        g2d.setColor(Color.BLACK);
-        float strokeWidth = (float) Math.max(1.5, s * 0.7);
-        g2d.setStroke(new BasicStroke(strokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g2d.draw(cursorPath);
+    private void drawDefaultWhiteCursor(Graphics2D g2d, int s) {
+        Path2D p = new Path2D.Double();
+        p.moveTo(0, 0); p.lineTo(0, s*0.7); p.lineTo(s*0.2, s*0.5); p.lineTo(s*0.4, s*0.8);
+        p.lineTo(s*0.5, s*0.75); p.lineTo(s*0.3, s*0.45); p.lineTo(s*0.5, s*0.45); p.closePath();
+        g2d.setColor(Color.WHITE); g2d.fill(p);
+        g2d.setColor(Color.BLACK); g2d.setStroke(new BasicStroke(Math.max(1, s*0.02f))); g2d.draw(p);
     }
 }
