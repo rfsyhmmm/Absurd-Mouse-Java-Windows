@@ -7,9 +7,15 @@
 </p>
 
 ---
-# Absurd Mouse v1.0.0
+
+# Absurd Mouse
 
 Absurd Mouse is a lightweight Windows utility built in Java that replaces your standard system pointers with a gigantic, customizable cursor. Utilizing the Win32 API via JNA, this tool provides a seamless, click-through overlay that tracks your mouse across the entire operating system.
+
+---
+
+## 📌 Version
+**Latest Release**: [v1.0.0](https://github.com/rfsyhmmm/Absurd-Mouse-Java-Windows/releases/tag/v1.0.0)
 
 ---
 
@@ -21,7 +27,7 @@ Easily adjust the cursor size from a standard pointer to an absurdly large 1000p
 ![Scale Demo](https://github.com/user-attachments/assets/97f6f31b-c314-4f20-81e6-b1bcb4e3770c)
 
 ### Custom Image Support
-Load any `.png` with transparent background or else to use as your cursor. With built-in **Adjustable Offset** to ensure your "hotspot" stays perfectly aligned with the native click point.
+Load any `.png` with a transparent background to use as your cursor. Includes an **Adjustable Offset** feature to ensure your "hotspot" stays perfectly aligned with the native click point.
 
 ![Image Custom Demo](https://github.com/user-attachments/assets/6a451692-d27a-4059-9c19-d92c69262d22)
 
@@ -43,21 +49,6 @@ Load any `.png` with transparent background or else to use as your cursor. With 
 * **`Main.java`**: The configuration UI and controller for Win32 API interactions (`SetSystemCursor`, `CreateCursor`).
 * **`CursorOverlay.java`**: The rendering engine responsible for the transparent JWindow and image processing.
 * **`GlobalMouse.java`**: Handles native system hooks and configures the overlay for click-through behavior.
-
----
-
-## 🛠️ Getting Started
-
-1.  **Clone the Repository**:
-    ```bash
-    git clone [https://github.com/rfsyhmmm/Absurd-Mouse-Java-Windows.git](https://github.com/rfsyhmmm/Absurd-Mouse-Java-Windows.git)
-    ```
-2.  **Build with Maven**:
-    ```bash
-    mvn clean package
-    ```
-3.  **Run the Application**:
-    Launch the generated JAR. Note that some cursor manipulation features may require **Administrator privileges** depending on your Windows security settings.
 
 ---
 
