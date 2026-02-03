@@ -1,31 +1,54 @@
-# Simple Absurd Mouse for WIndows
+# Absurd Mouse
 
-A Java-based Windows utility to create a comically large, click-through cursor overlay.
+[**Bahasa Indonesia**](#bahasa-indonesia) | [**English**](#english)
 
-## Background
+---
+
+## Bahasa Indonesia
+
+### Background
 Proyek ini dikembangkan menggunakan pendekatan **Vibe Coding** bersama **Gemini**. Fokus utamanya adalah eksplorasi teknis dalam menggabungkan Java Swing dengan Windows Native API untuk memanipulasi perilaku jendela di tingkat sistem operasi secara dinamis.
 
-## Demo
-<div align="center">
-  <video src="https://github.com/user-attachments/assets/e8429159-203e-4266-ac4b-7bd2e3f32323" width="100%" autoplay loop muted playsinline>
-    Your browser does not support the video tag.
-  </video>
-</div>
+### Demo
+![Absurd Mouse Demo](https://github.com/user-attachments/assets/cd7cfa0d-1955-4636-80c0-e8edeb749759)
 
-## Features
-- **Dynamic Scaling**: Mengubah ukuran kursor dari 32px hingga 1000px secara real-time melalui UI slider.
-- **Native Click-Through**: Menggunakan Windows API agar kursor raksasa tidak menghalangi input mouse pada aplikasi lain di latar belakang.
-- **Global Mouse Tracking**: Mendeteksi pergerakan mouse di seluruh sistem melalui native hooks, bahkan saat aplikasi kehilangan fokus.
-- **High-Precision Alignment**: Implementasi DPI awareness (UI Scale 1.0) untuk memastikan ujung kursor raksasa tepat menimpa ujung kursor asli dengan akurasi 1:1.
+### Fitur
+- **Dynamic Scaling**: Mengubah ukuran kursor secara *real-time* dari 32px hingga 1000px melalui UI slider.
+- **Native Click-Through**: Mengimplementasikan Windows API agar jendela kursor tidak menghalangi input mouse pada aplikasi di latar belakang.
+- **Global Mouse Tracking**: Memantau pergerakan mouse di seluruh sistem melalui *native hooks*, bahkan saat aplikasi kehilangan fokus.
+- **DPI Awareness**: Mengatur properti `sun.java2d.uiScale` ke `1.0` untuk memastikan posisi kursor raksasa sinkron 1:1 dengan kursor asli.
 
-## Prerequisites
-- **Java JDK 17** (Target kompatibilitas utama).
-- **Windows OS** (Diperlukan untuk pemanggilan fungsi Win32 API via JNA).
-- **Apache Maven** untuk manajemen dependensi dan proses build.
+### Prasyarat
+- **Java JDK 17** (Sesuai konfigurasi di `pom.xml`).
+- **Windows OS** (Diperlukan untuk JNA Win32).
+- **Apache Maven**.
 
-## Installation & Usage
+---
 
-1. **Clone Repository**
-   ```bash
-   git clone [https://github.com/rfsyhmmm/Absurd-Mouse-Java-Windows.git](https://github.com/rfsyhmmm/Absurd-Mouse-Java-Windows.git)
-   cd absurd-mouse
+## English
+
+### Background
+This project was developed using the **Vibe Coding** approach with **Gemini**. The main focus is a technical exploration of combining Java Swing with the Windows Native API to dynamically manipulate window behavior at the OS level.
+
+### Demo
+![Absurd Mouse Demo](https://github.com/user-attachments/assets/cd7cfa0d-1955-4636-80c0-e8edeb749759)
+
+### Features
+- **Dynamic Scaling**: Change cursor size in real-time from 32px to 1000px via UI slider.
+- **Native Click-Through**: Implements Windows API so the cursor window does not block mouse input for background applications.
+- **Global Mouse Tracking**: Tracks mouse movement system-wide via native hooks, even when the app loses focus.
+- **DPI Awareness**: Sets `sun.java2d.uiScale` to `1.0` to ensure the giant cursor position stays 1:1 in sync with the native cursor.
+
+### Prerequisites
+- **Java JDK 17** (As configured in `pom.xml`).
+- **Windows OS** (Required for JNA Win32 integration).
+- **Apache Maven**.
+
+---
+
+## Installation & Technical Details (Common)
+
+### Build & Run
+```bash
+mvn clean compile
+mvn exec:java -Dexec.mainClass="com.funny.Main"
