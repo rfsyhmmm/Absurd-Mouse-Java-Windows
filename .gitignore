@@ -1,5 +1,12 @@
-﻿target/
+﻿# Build artifacts
+/target/
+/build/
+
+# IDE files
 .idea/
 *.iml
-out/
+.vscode/
+
+# System files
+Thumbs.db
 .DS_Store

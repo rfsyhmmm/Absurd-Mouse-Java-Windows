@@ -11,12 +11,14 @@ import org.jnativehook.mouse.NativeMouseMotionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Handles system-wide mouse event hooks and window click-through configuration.
+ */
 public class GlobalMouse {
-    // Inisialisasi Logger untuk mencatat aktivitas hook
     private static final Logger LOGGER = Logger.getLogger(GlobalMouse.class.getName());
 
     public static void init(CursorOverlay overlay) {
-        // Matikan log internal JNativeHook agar tidak memenuhi konsol
+        // Disable internal JNativeHook logging to keep console clean
         Logger jnhLogger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
         jnhLogger.setLevel(Level.OFF);
         jnhLogger.setUseParentHandlers(false);
@@ -24,9 +26,8 @@ public class GlobalMouse {
         try {
             GlobalScreen.registerNativeHook();
         } catch (NativeHookException e) {
-            // Mencatat error jika gagal mendaftarkan hook sistem
-            LOGGER.log(Level.SEVERE, "Gagal mendaftarkan Global Native Hook. Tracking mouse tidak akan berfungsi.", e);
-            return; // Hentikan proses jika hook gagal agar tidak terjadi error berantai
+            LOGGER.log(Level.SEVERE, "Failed to register Global Native Hook. Tracking will be disabled.", e);
+            return;
         }
 
         GlobalScreen.addNativeMouseMotionListener(new NativeMouseMotionListener() {
@@ -41,9 +42,11 @@ public class GlobalMouse {
             }
         });
 
-        // Konfigurasi JNA agar jendela overlay tidak menangkap klik (click-through)
+        // Use JNA to set the window as Click-Through (transparent to mouse input)
         WinDef.HWND hwnd = new WinDef.HWND(Native.getWindowPointer(overlay));
         int wl = User32.INSTANCE.GetWindowLong(hwnd, WinUser.GWL_EXSTYLE);
         User32.INSTANCE.SetWindowLong(hwnd, WinUser.GWL_EXSTYLE, wl | WinUser.WS_EX_LAYERED | WinUser.WS_EX_TRANSPARENT);
+
+        LOGGER.info("Global Mouse Tracking and Click-Through initialized successfully.");
     }
 }

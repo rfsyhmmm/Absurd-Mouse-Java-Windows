@@ -10,28 +10,37 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Transparent overlay window that renders the custom cursor image or vector.
+ */
 public class CursorOverlay extends JWindow {
     private static final Logger LOGGER = Logger.getLogger(CursorOverlay.class.getName());
     private int cursorSize = 200;
-    private int offX = 0, offY = 0; // Kalibrasi manual
+    private int offX = 0, offY = 0; // Manual calibration offsets
     private BufferedImage customIcon;
 
     public CursorOverlay() {
         setBackground(new Color(0, 0, 0, 0));
         setAlwaysOnTop(true);
-        setSize(5000, 5000);
+        setSize(5000, 5000); // Large canvas for extreme cursor sizes
     }
 
     public void setIcon(File file) {
         try {
             BufferedImage raw = ImageIO.read(file);
+            // AUTO-TRIM: Removing transparent padding to ensure proper hotspot alignment
             this.customIcon = trimImage(raw);
             repaint();
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Gagal memuat gambar", e);
+            LOGGER.log(Level.SEVERE, "Failed to load cursor image: " + file.getAbsolutePath(), e);
+            JOptionPane.showMessageDialog(this, "Unsupported or corrupted image file.", "Load Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    /**
+     * Scans and crops the image to remove transparent edges.
+     * Uses alpha thresholding to ignore noise or anti-aliasing artifacts.
+     */
     private BufferedImage trimImage(BufferedImage img) {
         int width = img.getWidth(), height = img.getHeight();
         int top = height, left = width, bottom = 0, right = 0;
@@ -39,7 +48,7 @@ public class CursorOverlay extends JWindow {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int alpha = (img.getRGB(x, y) >> 24) & 0xff;
-                // THRESHOLD: Abaikan pixel yang sangat transparan (noise background)
+                // Threshold of 15 to skip near-transparent pixels
                 if (alpha > 15) {
                     if (x < left) left = x;
                     if (y < top) top = y;
@@ -54,7 +63,6 @@ public class CursorOverlay extends JWindow {
 
     public void updateSize(int size) { this.cursorSize = size; repaint(); }
 
-    // Update offset manual dari UI
     public void setManualOffsets(int x, int y) {
         this.offX = x;
         this.offY = y;
@@ -69,14 +77,14 @@ public class CursorOverlay extends JWindow {
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
         if (customIcon != null) {
-            // Gambar digeser berdasarkan offset manual (dikali skala agar konsisten)
+            // Render custom image with manual calibration offset
             g2d.drawImage(customIcon, offX, offY, cursorSize, cursorSize, null);
         } else {
-            drawDefaultWhiteCursor(g2d, cursorSize);
+            drawDefaultWhitePointer(g2d, cursorSize);
         }
     }
 
-    private void drawDefaultWhiteCursor(Graphics2D g2d, int s) {
+    private void drawDefaultWhitePointer(Graphics2D g2d, int s) {
         Path2D p = new Path2D.Double();
         p.moveTo(0, 0); p.lineTo(0, s*0.7); p.lineTo(s*0.2, s*0.5); p.lineTo(s*0.4, s*0.8);
         p.lineTo(s*0.5, s*0.75); p.lineTo(s*0.3, s*0.45); p.lineTo(s*0.5, s*0.45); p.closePath();
