@@ -6,55 +6,66 @@
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
 </p>
 
-[**🇮🇩 Bahasa Indonesia**](#bahasa-indonesia) | [**🇬🇧 English**](#english)
+---
+# Absurd Mouse v1.0.0
+
+Absurd Mouse is a lightweight Windows utility built in Java that replaces your standard system pointers with a gigantic, customizable cursor. Utilizing the Win32 API via JNA, this tool provides a seamless, click-through overlay that tracks your mouse across the entire operating system.
 
 ---
 
-## 🇮🇩 Bahasa Indonesia
+## 📺 Demos
 
-### 📝 Latar Belakang
-Proyek ini dikembangkan menggunakan pendekatan **Vibe Coding** bersama **Gemini**. Fokus utamanya adalah eksplorasi teknis dalam menggabungkan Java Swing dengan Windows Native API untuk memanipulasi perilaku jendela di tingkat sistem operasi secara dinamis.
+### Dynamic Scaling
+Easily adjust the cursor size from a standard pointer to an absurdly large 1000px icon.
 
-### 🎥 Demo
-![Absurd Mouse Demo](https://github.com/user-attachments/assets/cd7cfa0d-1955-4636-80c0-e8edeb749759)
+![Scale Demo](https://github.com/user-attachments/assets/97f6f31b-c314-4f20-81e6-b1bcb4e3770c)
 
-### ✨ Fitur Utama
-- **Dynamic Scaling**: Mengubah ukuran kursor secara *real-time* dari 32px hingga 1000px melalui UI slider.
-- **Native Click-Through**: Mengimplementasikan Windows API agar jendela kursor tidak menghalangi input mouse pada aplikasi lain di latar belakang.
-- **Global Mouse Tracking**: Memantau pergerakan mouse di seluruh sistem melalui *native hooks*, bahkan saat aplikasi kehilangan fokus.
-- **DPI Awareness**: Sinkronisasi kursor raksasa tetap 1:1 dengan kursor asli pada layar resolusi tinggi.
+### Custom Image Support
+Load any `.png` with transparent background or else to use as your cursor. With built-in **Adjustable Offset** to ensure your "hotspot" stays perfectly aligned with the native click point.
 
-### 🛠️ Prasyarat
-- **Java JDK 17**.
-- **Windows OS** (Win32 API integration).
-- **Apache Maven**.
+![Image Custom Demo](https://github.com/user-attachments/assets/6a451692-d27a-4059-9c19-d92c69262d22)
 
 ---
 
-## 🇬🇧 English
+## 🚀 Key Features
 
-### 📝 Background
-This project was developed using the **Vibe Coding** approach with **Gemini**. The main focus is a technical exploration of combining Java Swing with the Windows Native API to dynamically manipulate window behavior at the OS level.
-
-### 🎥 Demo
-![Absurd Mouse Demo](https://github.com/user-attachments/assets/cd7cfa0d-1955-4636-80c0-e8edeb749759)
-
-### ✨ Key Features
-- **Dynamic Scaling**: Change cursor size in real-time from 32px to 1000px via UI slider.
-- **Native Click-Through**: Implements Windows API so the cursor window does not block mouse input for background applications.
-- **Global Mouse Tracking**: Tracks mouse movement system-wide via native hooks, even when the app loses focus.
-- **DPI Awareness**: Ensures the giant cursor position stays in 1:1 sync with the native cursor.
-
-### 🛠️ Prerequisites
-- **Java JDK 17**.
-- **Windows OS** (Required for JNA Win32 integration).
-- **Apache Maven**.
+* **Ultimate Pointer Hiding**: Globally hides all Windows cursor states, including the standard arrow, text I-beam, hand pointers, and loading icons.
+* **Precision Tracking**: Implements high-performance global mouse hooks using JNativeHook for 1:1 movement accuracy.
+* **Auto-Trim Technology**: Scans and crops transparent edges of custom images using alpha thresholding to maintain perfect cursor alignment.
+* **Manual Calibration**: Includes X and Y offset sliders to fine-tune the "hotspot" for complex custom images.
+* **Safety First**: Built-in JVM shutdown hooks and an emergency "Restore" button ensure your original Windows pointers are always recovered.
+* **Click-Through Overlay**: The cursor window uses `WS_EX_TRANSPARENT` styles, allowing you to click through the giant cursor and interact with windows behind it.
 
 ---
 
-## 🚀 Installation & Technical Details (Common)
+## 📂 Project Structure
 
-### Build & Run
-```bash
-mvn clean compile
-mvn exec:java -Dexec.mainClass="com.funny.Main"
+* **`Main.java`**: The configuration UI and controller for Win32 API interactions (`SetSystemCursor`, `CreateCursor`).
+* **`CursorOverlay.java`**: The rendering engine responsible for the transparent JWindow and image processing.
+* **`GlobalMouse.java`**: Handles native system hooks and configures the overlay for click-through behavior.
+
+---
+
+## 🛠️ Getting Started
+
+1.  **Clone the Repository**:
+    ```bash
+    git clone [https://github.com/rfsyhmmm/Absurd-Mouse-Java-Windows.git](https://github.com/rfsyhmmm/Absurd-Mouse-Java-Windows.git)
+    ```
+2.  **Build with Maven**:
+    ```bash
+    mvn clean package
+    ```
+3.  **Run the Application**:
+    Launch the generated JAR. Note that some cursor manipulation features may require **Administrator privileges** depending on your Windows security settings.
+
+---
+
+## ⚠️ Important Note
+This application manipulates system-wide pointers. If the application crashes, your cursors might remain hidden. Use the **"Restore Original Pointers"** button or restart your computer to reset them to the default Windows theme.
+
+---
+
+**Version**: 1.0.0  
+**License**: MIT  
+**Author**: rfsyhmmm
